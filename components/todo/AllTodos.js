@@ -2,23 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-const AllTodos = () => {
-  const url = "http://localhost:3000/backend/todolistdata";
-
-  const fetchTodos = async () => {
-    const res = await axios.get(url);
-    return res.data || [];
-  };
-
-  const {
-    data: todoListData,
-    isLoading: loadingTodo,
-    refetch: refectTodo,
-  } = useQuery({
-    queryKey: ["fetchTodos"],
-    queryFn: fetchTodos,
-  });
-
+const AllTodos = ({ todoListData, loadingTodo }) => {
   return (
     <div className="mt-2">
       {loadingTodo ? (
@@ -28,7 +12,7 @@ const AllTodos = () => {
           <div className="w-full bg-white shadow-lg rounded-2xl dark:bg-gray-700">
             <p className="p-4 font-bold text-black text-md dark:text-white">
               My Tasks
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-300 dark:text-white">
+              <span className="ml-2 text-sm text-gray-500">
                 {todoListData?.length}
               </span>
             </p>

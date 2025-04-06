@@ -2,7 +2,7 @@ import axios from "axios";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 
-const InputAndBtn = () => {
+const InputAndBtn = ({ refectTodo }) => {
   const url = "http://localhost:3000/backend/todolistdata";
 
   const formik = useFormik({
@@ -10,21 +10,20 @@ const InputAndBtn = () => {
       todo: "",
     },
     onSubmit: (values) => {
-      console.log(values, "{/}");
       axios
         .post(url, {
           todo: values?.todo,
         })
         .then(function (response) {
-          console.log(response);
+          setTimeout(() => {
+            refectTodo();
+          }, 500);
         })
         .catch(function (error) {
           console.log(error);
         });
     },
   });
-
-  console.log(formik, "{/}");
 
   return (
     <>
