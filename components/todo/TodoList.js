@@ -25,7 +25,11 @@ const TodoList = () => {
   return (
     <>
       <InputAndBtn refectTodo={refectTodo} />
-      <AllTodos todoListData={todoListData} loadingTodo={loadingTodo} />
+      <AllTodos
+        todoListData={todoListData}
+        loadingTodo={loadingTodo}
+        refectTodo={refectTodo}
+      />
     </>
   );
 };

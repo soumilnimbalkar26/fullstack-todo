@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const AllTodos = ({ todoListData, loadingTodo }) => {
+const AllTodos = ({ todoListData, loadingTodo, refectTodo }) => {
+  const url = "http://localhost:3000/backend/todolistdata";
+
+  const deleteTodo = (id) => {
+    axios.delete(url, {
+      data: {
+        id: id,
+      },
+    });
+  };
+
   return (
     <div className="mt-2">
       {loadingTodo ? (
@@ -20,11 +31,20 @@ const AllTodos = ({ todoListData, loadingTodo }) => {
               {todoListData?.map((el) => (
                 <li
                   key={el?.id}
-                  className="flex items-center justify-between py-3 text-gray-600 border-b-2 border-gray-100 dark:text-gray-200 dark:border-gray-800"
+                  className="py-3 px-3 text-gray-600 border-b-2 border-gray-100 dark:text-gray-200 dark:border-gray-800"
                 >
-                  <div className="flex items-center justify-start text-sm">
-                    <span className="mx-4">{el?.id}</span>
-                    <span>{el?.todo}</span>
+                  <div className="flex justify-between">
+                    <div className="flex">
+                      <div className="mx-4">{el?.id}</div>
+                      <div>{el?.todo}</div>
+                    </div>
+                    <DeleteIcon
+                      onClick={() => {
+                        deleteTodo(el?.id);
+                        refectTodo();
+                      }}
+                      className="text-red-600 cursor-pointer"
+                    />
                   </div>
                 </li>
               ))}
