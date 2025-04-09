@@ -1,14 +1,19 @@
 import axios from "axios";
 import { useFormik } from "formik";
 import React, { useState } from "react";
+import * as Yup from "yup";
 
 const InputAndBtn = ({ refectTodo }) => {
   const url = "http://localhost:3000/backend/todolistdata";
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       todo: "",
     },
+    validationSchema: Yup.object({
+      todo: Yup.string().required("Todo is required"), // This line adds the required validation for todo
+    }),
     onSubmit: (values) => {
       axios
         .post(url, {
@@ -40,7 +45,9 @@ const InputAndBtn = ({ refectTodo }) => {
             placeholder="Enter Todo"
             onChange={formik?.handleChange}
           />
-
+          {formik?.errors && (
+            <div className="text-red-600">{formik?.errors?.todo}</div>
+          )}
           <button
             onClick={formik?.handleSubmit}
             type="button"
