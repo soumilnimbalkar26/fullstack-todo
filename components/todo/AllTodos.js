@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axiosInstance from "../../http/axiosInstance";
 
 const AllTodos = ({ todoListData, loadingTodo, refectTodo }) => {
-  const url = "http://localhost:3000/backend/todolistdata";
-
   const deleteTodo = (id) => {
-    axios.delete(url, {
+    axiosInstance.delete("/", {
       data: {
         id: id,
       },
@@ -41,7 +39,9 @@ const AllTodos = ({ todoListData, loadingTodo, refectTodo }) => {
                     <DeleteIcon
                       onClick={() => {
                         deleteTodo(el?.id);
-                        refectTodo();
+                        setTimeout(() => {
+                          refectTodo();
+                        }, 300);
                       }}
                       className="text-red-600 cursor-pointer"
                     />
