@@ -9,11 +9,32 @@ export async function POST(request) {
   const newData = {
     id: todoData?.length + 1,
     todo: dataToSet?.todo,
+    completed: false,
   };
   todoData?.push(newData);
   return new Response(JSON.stringify(newData), {
     headers: { "Content-Type": "application/json" },
     status: 201,
+  });
+}
+
+export async function PATCH(request) {
+  const { id, completed } = await request.json();
+
+  const todo = todoData.find((item) => item.id === id);
+
+  if (!todo) {
+    return new Response(JSON.stringify({ error: "Item not found" }), {
+      headers: { "Content-Type": "application/json" },
+      status: 404,
+    });
+  }
+
+  todo.completed = Boolean(completed);
+
+  return new Response(JSON.stringify(todo), {
+    headers: { "Content-Type": "application/json" },
+    status: 200,
   });
 }
 
