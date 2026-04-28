@@ -3,62 +3,113 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import axiosInstance from "../../http/axiosInstance";
 
-const InputAndBtn = ({ refectTodo }) => {
+const quickStarts = [
+  "Plan the top 3 priorities",
+  "Reply to pending messages",
+  "Review the next sprint tasks",
+];
+
+const InputAndBtn = ({ refectTodo, activeCount, completedCount }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const formik = useFormik({
-    enableReinitialize: true,
     initialValues: {
       todo: "",
     },
     validationSchema: Yup.object({
       todo: Yup.string().required("Todo is required"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values, { resetForm }) => {
       const data = {
-        todo: values?.todo,
+        todo: values?.todo?.trim(),
       };
-      axiosInstance
-        .post("/", data)
-        .then(function (response) {
-          setTimeout(() => {
-            refectTodo();
-          }, 500);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+
+      try {
+        setIsSubmitting(true);
+        await axiosInstance.post("/", data);
+        resetForm();
+        await refectTodo();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsSubmitting(false);
+      }
     },
   });
 
   return (
-    <>
-      <div className="flex items-center justify-center">
-        <div className=" relative ">
+    <section className="glass-panel relative overflow-hidden p-6 sm:p-8">
+      <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[color:var(--accent-soft)] blur-3xl" />
+      <div className="relative space-y-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-xl space-y-3">
+            <span className="eyebrow">Daily flow</span>
+            <div className="space-y-2">
+              <h1 className="text-4xl font-semibold tracking-tight text-[color:var(--foreground)] sm:text-5xl">
+                Build a calmer plan for the day.
+              </h1>
+              <p className="max-w-lg text-sm leading-6 text-[color:var(--muted-strong)] sm:text-base">
+                Capture the next thing that matters, keep the list tidy, and
+                let the board stay readable even when the day gets noisy.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:min-w-72">
+            <div className="stat-card">
+              <span className="stat-label">Active tasks</span>
+              <span className="stat-value">{activeCount}</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-label">Done today</span>
+              <span className="stat-value">{completedCount}</span>
+            </div>
+          </div>
+        </div>
+
+        <form className="space-y-3" onSubmit={formik.handleSubmit}>
           <label
-            htmlFor="name-with-label"
-            className="text-gray-100 text-[24px]"
+            htmlFor="todo-input"
+            className="text-sm font-medium text-[color:var(--foreground)]"
           >
-            <b>Todo</b>
+            Add a new task
           </label>
           <input
             type="text"
-            id="name-with-label"
-            className="rounded-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+            id="todo-input"
+            className="input-shell"
             name="todo"
-            placeholder="Enter Todo"
-            onChange={formik?.handleChange}
+            placeholder="Draft the next meaningful step..."
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.todo}
           />
-          {formik?.errors && (
-            <div className="text-red-500">{formik?.errors?.todo}</div>
-          )}
-          <button
-            onClick={formik?.handleSubmit}
-            className="py-2 px-4 mt-2 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg cursor-pointer"
-          >
-            Add Todo
-          </button>
-        </div>
+          {formik.touched.todo && formik.errors.todo ? (
+            <div className="text-sm text-rose-600">{formik.errors.todo}</div>
+          ) : null}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-wrap gap-2">
+              {quickStarts.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => formik.setFieldValue("todo", item)}
+                  className="chip-button"
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="primary-button sm:min-w-40"
+            >
+              {isSubmitting ? "Adding..." : "Add task"}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </section>
   );
 };
 
